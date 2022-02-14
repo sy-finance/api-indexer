@@ -1,4 +1,18 @@
 {
-    "name": "syfin-api",
-    "version": "1.0.0"
+  "name": "api-indexer",
+  "version": "1.0.0",
+  "description": "This iterates through all Syfin minted NFTs and then indexes and saves them to a nftlist.json file that is read by the frontend for sorting/filtering.",
+  "type": "module",
+  "main": "api.js",
+  "keywords": [
+    "syfin",
+    "api-indexer"
+  ],
+  "dependencies": {
+    "ethers": "5.5.4",
+    "yargs": "17.3.1"
+  },
+  "engines": {
+    "node": ">=16"
   }
+}

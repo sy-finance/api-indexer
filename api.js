@@ -1,71 +1,130 @@
-const Web3 = require('web3');
-const fs = require('fs');
-const web3 = new Web3('https://rpc.ftm.tools/');
+import fs from "fs/promises";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
+import contracts from "./lib/contracts/contracts.mjs";
 
-async function getNFTs() {
-        // Load account
-        // const accounts = await web3.eth.getAccounts()
-        // this.setState({ account: accounts[0] })
+async function getData(index) {
+  const imageData = await contracts.nfts.imageData(index);
+  const likes = await contracts.likes.nftLikes(index);
+  const diamonds = await contracts.likes.nftDiamonds(index);
+  const blacklisted = await contracts.blacklist.getBlackListedNFT(index);
 
-        var images = [];
-
-        const abi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"uint256","name":"_price","type":"uint256"},{"internalType":"uint256","name":"_time","type":"uint256"}],"name":"approveForAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"uint256","name":"_price","type":"uint256"}],"name":"approveForSale","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"approveNFT","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"categories","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"imageData","outputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"mimeType","type":"string"},{"internalType":"string","name":"nftData","type":"string"},{"internalType":"string","name":"category","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"string","name":"url","type":"string"},{"internalType":"uint256","name":"price","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"images","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"isApprovedOrOwner","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"mimetypes","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_mimeType","type":"string"},{"internalType":"string","name":"_nftData","type":"string"},{"internalType":"string","name":"_category","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"string","name":"_url","type":"string"},{"internalType":"uint256","name":"_price","type":"uint256"}],"name":"mint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"nftSold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"uint256","name":"_price","type":"uint256"}],"name":"updatePrice","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
-        const contract = new web3.eth.Contract(abi, "0x954d9EC10bb19B64EF07603c102f5BBd75216276");
-        // console.log(contract)
-
-        const totalSupply = await contract.methods.totalSupply().call();
-        // console.log(totalSupply-1);
-
-        const abilike = [{"inputs":[{"internalType":"contract SyfinNFT","name":"_syfinNFT","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_tokenId","type":"uint256"},{"indexed":false,"internalType":"address","name":"_icer","type":"address"}],"name":"IcedNFT","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_tokenId","type":"uint256"},{"indexed":false,"internalType":"address","name":"_liker","type":"address"}],"name":"LikedNFT","type":"event"},{"inputs":[{"internalType":"address","name":"_minter","type":"address"},{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"IceNFT","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"LikeNFT","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"SYF","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getIcePrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"icers","outputs":[{"internalType":"uint256","name":"totalice","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"likers","outputs":[{"internalType":"uint256","name":"totallikes","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"nftDiamonds","outputs":[{"internalType":"uint256","name":"diamonds","type":"uint256"},{"internalType":"uint256","name":"nftId","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"nftLikes","outputs":[{"internalType":"uint256","name":"likes","type":"uint256"},{"internalType":"uint256","name":"nftId","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_iceprice","type":"uint256"}],"name":"setIcePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"syfinNFT","outputs":[{"internalType":"contract SyfinNFT","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
-        const contractlike = new web3.eth.Contract(abilike, "0xe145C6Cb2FA344cb9A1335685F844bDfF3470321");
-        
-        const abiblack = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"hashAddress","type":"address"},{"indexed":false,"internalType":"bool","name":"blacklisted","type":"bool"}],"name":"SetBlackListedAddress","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"nftID","type":"uint256"},{"indexed":false,"internalType":"bool","name":"blacklisted","type":"bool"}],"name":"SetBlackListedNFT","type":"event"},{"inputs":[],"name":"AddyCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"IDCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"blAddress","type":"address"}],"name":"getBlackListedAddress","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"nftID","type":"uint256"}],"name":"getBlackListedNFT","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"idupdates","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"addy","type":"address"},{"internalType":"bool","name":"blacklisted","type":"bool"}],"name":"setBlackListedAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"nftID","type":"uint256"},{"internalType":"bool","name":"blacklisted","type":"bool"}],"name":"setBlackListedNFT","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"updates","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
-        const contractblack = new web3.eth.Contract(abiblack, "0xfBA3E2C37A8F199c22eF9bD331f09023D2110c98");
-
-        var notBL = 0;
-        var removed = 3;
-        
-        console.log('Started Iterations');
-        
-        var total = totalSupply;
-        
-        console.log(total);
-        // Load NFTs Data 
-        for (var i = total; i--;) {
-            const metadata = await contract.methods.imageData(i).call();
-            const likecount = await contractlike.methods.nftLikes(i).call();
-            const icecount = await contractlike.methods.nftDiamonds(i).call();
-            const blacklisted = await contractblack.methods.getBlackListedNFT(i).call();
-
-            // console.log(i);
-            // console.log(total);
-            
-            // 606 
-
-            if (!blacklisted) {
-                // console.log(metadata)
-                notBL++;
-                // console.log(notBL)
-                // console.log(removed)
-
-                images.push({ name: metadata.name, nftData: metadata.nftData, mimeType: metadata.mimeType, category: metadata.category, price: metadata.price, likecount: likecount.likes, icecount: icecount.diamonds, id: i});
-                
-                if (Number(notBL) == Number(total - removed)) {
-                    console.log('Loaded all ' + notBL);
-                    let data = JSON.stringify(images);
-                    fs.writeFileSync('nftlist.json', data);
-                    console.log('Wrote Data to nftlist.json');
-                    getNFTs();
-                }
-                // let data = JSON.stringify(images);
-                // fs.writeFileSync('nftlist.json', data);
-                // console.log(images);
-            } else if (blacklisted == true) {
-               removed++;
-            }
-        }
-
+  return {
+    index,
+    imageData,
+    likes,
+    diamonds,
+    blacklisted,
+  };
 }
 
-getNFTs();
+function getBatch(from, to) {
+  const promises = [];
+  for (let index = from; index >= to; index--) {
+    promises.push(getData(index));
+  }
+
+  // NOTE: We could use Promise.allSettled() instead and check on status whether
+  // getting data failed or not, and retry when failure happens.
+  return Promise.all(promises);
+}
+
+async function writeNFTList(options) {
+  const totalSupply = Number(await contracts.nfts.totalSupply());
+  const stats = {
+    total: 0,
+    blacklisted: 0,
+  };
+
+  console.log(
+    `Write nftlist (totalSupply: ${totalSupply}) (output: ${options.output}) (forever: ${options.forever})`
+  );
+  console.time("write-nftlist");
+
+  // open json output file
+  const filename = `nft_list_${Date.now()}.json`;
+  const fh = await fs.open(filename, "w+");
+  await fh.write("[");
+
+  // fetch nft items, and write to file asynchronously
+  const batchSize = 10;
+  let first = true;
+  for (let i = totalSupply - 1; i > 0; i -= batchSize) {
+    const from = i;
+    const to = i - (batchSize - 1) > 0 ? i - (batchSize - 1) : 0;
+
+    const batch = await getBatch(from, to);
+    for (const item of batch) {
+      if (item.blacklisted) {
+        console.warn(`Skipping blacklisted item with index: ${item.index}`);
+        stats.blacklisted += 1;
+        continue;
+      }
+      stats.total += 1;
+
+      if (!first) {
+        await fh.write(",");
+      }
+      first = false;
+
+      const data = {
+        id: item.index,
+        name: item.imageData.name,
+        nftData: item.imageData.nftData,
+        mimeType: item.imageData.mimeType,
+        category: item.imageData.category,
+        price: item.imageData.price,
+        likecount: item.likes,
+        icecount: item.diamonds,
+      };
+      await fh.write(JSON.stringify(data));
+    }
+  }
+
+  // close json output
+  await fh.write("]");
+  await fh.close();
+
+  await fs.rm(options.output, { force: true });
+  await fs.rename(filename, options.output);
+
+  console.timeEnd("write-nftlist");
+  console.log("stats:");
+  console.log("------");
+  console.log(`Total supply: ${totalSupply}`);
+  console.log(`Wrote ${stats.total} items to ${options.output}.`);
+  console.log(`Skipped ${stats.blacklisted} blacklisted items.`);
+  console.log("");
+  console.log("");
+}
+
+async function main(options) {
+  await writeNFTList(options);
+  if (options.forever) {
+    setTimeout(() => main(options), 1000);
+  }
+}
+
+process.on("unhandledRejection", (error) => {
+  console.error(error);
+  process.exit(1);
+});
+
+main(
+  yargs(hideBin(process.argv))
+    .scriptName("api.js")
+    .option("output", {
+      alias: "o",
+      type: "string",
+      describe: "Specify output filename",
+      default: "nftlist.json",
+    })
+    .option("forever", {
+      alias: "f",
+      type: "boolean",
+      describe: "Run this script forever",
+      default: false,
+    })
+    .help().argv
+);
