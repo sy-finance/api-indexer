@@ -1,13 +1,22 @@
 # Syfin NFT Market API Indexer Server
 
-This iterates through all Syfin minted NFTs and then indexes and saves them to a nftlist.json file that is read by the frontend for sorting/filtering.
+This iterates through all Syfin minted NFTs and saves all non blacklisted
+NFTS to a nftlist.json file that is read by the frontend for sorting/filtering.
 
 ## To Run
 
-`node api.js`
+```sh
+node api.js
+```
 
-You can use forever to run it forever also
+## Options
 
-`npm install -g forever`
+- `--help` help
+- `--output=filename` specify output filename (default: nftlist.json)
+- `--forever` run script forever (default: false)
 
-`forever start api.js`
+e.g.:
+
+```sh
+node api.js --output=custom-filename.json --forever
+```
