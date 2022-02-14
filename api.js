@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import contracts from "./lib/contracts/contracts.mjs";
+import contracts from "./lib/contracts/contracts.js";
 
 async function getData(index) {
   const imageData = await contracts.nfts.imageData(index);
